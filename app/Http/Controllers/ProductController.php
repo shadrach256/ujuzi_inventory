@@ -10,7 +10,22 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::all();
-        return view('dashboard', compact('products'));
+
+        $totalProducts = $products->count();
+        $totalUnits = $products->sum('quantity');
+        $inventoryValue = $products->sum(fn ($product) => $product->price * $product->quantity);
+        $lowStockThreshold = 5;
+        $lowStockCount = $products->where('quantity', '<=', $lowStockThreshold)->count();
+        $lowStockProducts = $products->where('quantity', '<=', $lowStockThreshold);
+
+        return view('dashboard', compact(
+            'products',
+            'totalProducts',
+            'totalUnits',
+            'inventoryValue',
+            'lowStockCount',
+            'lowStockProducts',
+        ));
     }
 
     public function create()
@@ -25,6 +40,7 @@ class ProductController extends Controller
             'sku' => 'required|unique:products',
             'price' => 'required|numeric',
             'quantity' => 'required|integer',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
         if ($request->hasFile('image')) {
@@ -33,7 +49,7 @@ class ProductController extends Controller
         }
 
         Product::create($data);
-        
+
         return redirect('/dashboard')->with('success', 'Product added!');
     }
 
@@ -46,9 +62,10 @@ class ProductController extends Controller
     {
         $data = $request->validate([
             'name' => 'required',
-            'sku' => 'required|unique:products,sku,' . $product->id,
+            'sku' => 'required|unique:products,sku,'.$product->id,
             'price' => 'required|numeric',
             'quantity' => 'required|integer',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
         if ($request->hasFile('image')) {
@@ -57,13 +74,14 @@ class ProductController extends Controller
         }
 
         $product->update($data);
-        
+
         return redirect('/dashboard')->with('success', 'Product updated!');
     }
 
     public function destroy(Product $product)
     {
         $product->delete();
+
         return redirect('/dashboard')->with('success', 'Product deleted!');
     }
 
@@ -72,6 +90,7 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
         $product->quantity += $request->quantity;
         $product->save();
+
         return redirect('/dashboard')->with('success', 'Stock added!');
     }
 
@@ -80,6 +99,7 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
         $product->quantity -= $request->quantity;
         $product->save();
+
         return redirect('/dashboard')->with('success', 'Stock removed!');
     }
 }

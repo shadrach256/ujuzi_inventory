@@ -1,11 +1,17 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ProductController;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 // Login Routes
 Route::get('/', function () {
+    if (Auth::check()) {
+        return redirect('/dashboard');
+    }
+
     return view('login');
 })->name('login');
 
@@ -14,22 +20,27 @@ Route::post('/login', function () {
     if (Auth::attempt($credentials)) {
         return redirect('/dashboard');
     }
+
     return back()->with('error', 'Invalid credentials');
 })->name('login.post');
 
 // Register Routes
 Route::get('/register', function () {
+    if (Auth::check()) {
+        return redirect('/dashboard');
+    }
+
     return view('register');
 })->name('register');
 
-Route::post('/register', function (\Illuminate\Http\Request $request) {
+Route::post('/register', function (Request $request) {
     $request->validate([
         'name' => 'required|string|max:255',
         'email' => 'required|string|email|max:255|unique:users',
         'password' => 'required|string|min:6|confirmed',
     ]);
 
-    \App\Models\User::create([
+    User::create([
         'name' => $request->name,
         'email' => $request->email,
         'password' => bcrypt($request->password),
@@ -40,6 +51,7 @@ Route::post('/register', function (\Illuminate\Http\Request $request) {
 
 Route::post('/logout', function () {
     Auth::logout();
+
     return redirect('/');
 })->name('logout');
 
