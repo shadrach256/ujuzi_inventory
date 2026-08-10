@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ujuzi Inventory Management System — Project Report</title>
+<style>
+    :root {
+        --primary: #4f46e5;
+        --dark: #0f172a;
+        --light: #f8fafc;
+        --border: #e2e8f0;
+        --muted: #64748b;
+        --code-bg: #f1f5f9;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        color: #1e293b;
+        line-height: 1.6;
+        background: #e2e8f0;
+        padding: 20px;
+    }
+    .page {
+        max-width: 210mm;
+        margin: 0 auto 20px;
+        background: #fff;
+        padding: 20mm 18mm;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        border-radius: 4px;
+    }
+    h1 { font-size: 26px; color: var(--dark); margin-bottom: 4px; }
+    h2 {
+        font-size: 20px;
+        color: var(--primary);
+        border-bottom: 2px solid var(--primary);
+        padding-bottom: 6px;
+        margin: 28px 0 14px;
+        page-break-after: avoid;
+    }
+    h3 { font-size: 16px; color: var(--dark); margin: 18px 0 8px; page-break-after: avoid; }
+    h4 { font-size: 14px; color: var(--dark); margin: 14px 0 6px; }
+    p { margin-bottom: 10px; }
+    ul, ol { margin: 0 0 12px 22px; }
+    li { margin-bottom: 4px; }
+    .subtitle { color: var(--muted); font-size: 15px; margin-bottom: 6px; }
+    .meta { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
+    .badge {
+        display: inline-block;
+        background: var(--primary);
+        color: #fff;
+        font-size: 12px;
+        padding: 2px 10px;
+        border-radius: 12px;
+        margin-right: 6px;
+    }
+    .badge.green { background: #10b981; }
+    .badge.amber { background: #f59e0b; }
+    .badge.red { background: #ef4444; }
+    .badge.slate { background: #64748b; }
+    pre {
+        background: var(--code-bg);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 12px 14px;
+        font-family: 'Consolas', 'Courier New', monospace;
+        font-size: 12.5px;
+        line-height: 1.5;
+        overflow-x: auto;
+        margin: 10px 0 16px;
+        page-break-inside: avoid;
+    }
+    code {
+        font-family: 'Consolas', 'Courier New', monospace;
+        background: var(--code-bg);
+        padding: 1px 5px;
+        border-radius: 3px;
+        font-size: 13px;
+    }
+    pre code { background: none; padding: 0; }
+    .comment { color: #6b7280; font-style: italic; }
+    .keyword { color: #7c3aed; font-weight: 600; }
+    .string { color: #059669; }
+    .table-wrap { overflow-x: auto; margin: 10px 0 16px; }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        margin: 8px 0;
+    }
+    th, td {
+        border: 1px solid var(--border);
+        padding: 8px 10px;
+        text-align: left;
+        vertical-align: top;
+    }
+    th { background: var(--light); font-weight: 600; }
+    .callout {
+        background: #eef2ff;
+        border-left: 4px solid var(--primary);
+        padding: 12px 16px;
+        border-radius: 0 6px 6px 0;
+        margin: 14px 0;
+    }
+    .callout.warn { background: #fffbeb; border-left-color: #f59e0b; }
+    .callout.green { background: #ecfdf5; border-left-color: #10b981; }
+    .flow {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        margin: 14px 0;
+        font-size: 13px;
+    }
+    .flow .step {
+        background: var(--light);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 8px 12px;
+        font-weight: 600;
+    }
+    .flow .arrow { color: var(--primary); font-weight: bold; }
+    .toc { margin: 16px 0 24px; }
+    .toc a { color: var(--primary); text-decoration: none; }
+    .toc li { margin-bottom: 6px; }
+    .page-break { page-break-before: always; }
+    .footer-note {
+        margin-top: 30px;
+        padding-top: 12px;
+        border-top: 1px solid var(--border);
+        font-size: 12px;
+        color: var(--muted);
+        text-align: center;
+    }
+    @media print {
+        body { background: #fff; padding: 0; }
+        .page { box-shadow: none; margin: 0; padding: 0; max-width: 100%; border-radius: 0; }
+        .page-break { page-break-before: always; }
+        a { color: inherit; }
+    }
+</style>
+</head>
+<body>
+
+<!-- ==================== PAGE 1: TITLE ==================== -->
+<div class="page">
+    <h1>Ujuzi Inventory Management System</h1>
+    <p class="subtitle">A Laravel 12 Web Application for Managing Product Inventory</p>
+    <p class="meta">Technical Project Report &nbsp;|&nbsp; Prepared for Presentation</p>
+
+    <div class="callout green">
+        <strong>What is this project?</strong> A web application that lets users register, log in, and manage a product
+        inventory — adding products, tracking stock levels, and viewing inventory value. It has two roles:
+        <strong>regular users</strong> (manage products) and <strong>admins</strong> (see KPIs, charts, and full inventory analytics).
+    </div>
+
+    <h2>Table of Contents</h2>
+    <ol class="toc">
+        <li><a href="#overview">Project Overview</a></li>
+        <li><a href="#tech">Technology Stack</a></li>
+        <li><a href="#mvc">MVC Architecture</a></li>
+        <li><a href="#database">Database Design & Migrations</a></li>
+        <li><a href="#routes">Routes</a></li>
+        <li><a href="#controllers">Controllers</a></li>
+        <li><a href="#models">Models</a></li>
+        <li><a href="#middleware">Middleware & Role System</a></li>
+        <li><a href="#views">Views & User Interface</a></li>
+        <li><a href="#testing">Testing</a></li>
+        <li><a href="#run">How to Run the Project</a></li>
+        <li><a href="#cheatsheet">Presenter's Cheat Sheet</a></li>
+    </ol>
+
+    <div class="callout">
+        <strong>How to use this document:</strong> Open this file in a browser, press <code>Ctrl+P</code> (or <code>Cmd+P</code>),
+        and choose "Save as PDF" to get a printable copy. Each major section starts on a new page for clean printing.
+    </div>
+</div>
+
+<!-- ==================== PAGE 2: OVERVIEW + TECH ==================== -->
+<div class="page page-break">
+    <h2 id="overview">1. Project Overview</h2>
+    <p>
+        The <strong>Ujuzi Inventory Management System</strong> is a full-stack web application built with the
+        <strong>Laravel</strong> PHP framework. It allows a business to keep track of its products, stock quantities,
+        and inventory value in one place.
+    </p>
+
+    <h3>Key Features</h3>
+    <ul>
+        <li><strong>User Authentication</strong> — register, log in, and log out securely.</li>
+        <li><strong>Product Management (CRUD)</strong> — create, read, update, and delete products.</li>
+        <li><strong>Image Uploads</strong> — attach a product photo when creating or editing.</li>
+        <li><strong>Stock Tracking</strong> — "stock in" and "stock out" buttons to adjust quantities.</li>
+        <li><strong>Low Stock Alerts</strong> — highlights products with 5 or fewer units left.</li>
+        <li><strong>Role-Based Dashboards</strong> — regular users see a simple product list; admins see KPIs and charts.</li>
+        <li><strong>Analytics (Admin only)</strong> — total products, total units, inventory value, and Chart.js graphs.</li>
+    </ul>
+
+    <h3>Who Uses It?</h3>
+    <table>
+        <tr><th>Role</th><th>What they can do</th></tr>
+        <tr><td><span class="badge slate">User</span></td><td>Log in, view products, add/edit/delete products, adjust stock.</td></tr>
+        <tr><td><span class="badge">Admin</span></td><td>Everything a user can do, plus see KPI cards and inventory charts.</td></tr>
+    </table>
+
+    <h2 id="tech">2. Technology Stack</h2>
+    <table>
+        <tr><th>Technology</th><th>Version</th><th>What it's used for (plain English)</th></tr>
+        <tr><td><strong>Laravel</strong></td><td>12</td><td>The main PHP framework — handles routing, controllers, models, and security.</td></tr>
+        <tr><td><strong>PHP</strong></td><td>8.2</td><td>The programming language the backend is written in.</td></tr>
+        <tr><td><strong>MySQL</strong></td><td>—</td><td>The database that stores users and products.</td></tr>
+        <tr><td><strong>Bootstrap</strong></td><td>5.3</td><td>A CSS framework that makes the UI look clean and responsive.</td></tr>
+        <tr><td><strong>Vite</strong></td><td>7</td><td>A build tool that bundles CSS and JavaScript assets.</td></tr>
+        <tr><td><strong>Chart.js</strong></td><td>4.4</td><td>A JavaScript library that draws the admin dashboard charts.</td></tr>
+        <tr><td><strong>Pest</strong></td><td>—</td><td>A testing framework used to write automated tests.</td></tr>
+    </table>
+
+    <div class="callout">
+        <strong>Why Laravel?</strong> Laravel is one of the most popular PHP frameworks because it provides built-in
+        authentication, database tools (migrations), security, and a clean structure — so developers don't have to
+        build everything from scratch.
+    </div>
+</div>
+
+<!-- ==================== PAGE 3: MVC ==================== -->
+<div class="page page-break">
+    <h2 id="mvc">3. MVC Architecture</h2>
+    <p>
+        Laravel follows the <strong>Model-View-Controller (MVC)</strong> pattern. This separates the app into three parts:
+    </p>
+    <ul>
+        <li><strong>Model</strong> — talks to the database. Represents a table (e.g., <code>Product</code> = the <code>products</code> table).</li>
+        <li><strong>View</strong> — the HTML the user sees. In Laravel these are <code>.blade.php</code> files.</li>
+        <li><strong>Controller</strong> — the "middleman" that receives a request, asks the Model for data, and passes it to a View.</li>
+    </ul>
+
+    <h3>How a Request Flows</h3>
+    <div class="flow">
+        <span class="step">Browser URL</span>
+        <span class="arrow">→</span>
+        <span class="step">Route (routes/web.php)</span>
+        <span class="arrow">→</span>
+        <span class="step">Middleware (auth/admin)</span>
+        <span class="arrow">→</span>
+        <span class="step">Controller</span>
+        <span class="arrow">→</span>
+        <span class="step">Model (DB)</span>
+        <span class="arrow">→</span>
+        <span class="step">View (HTML)</span>
+        <span class="arrow">→</span>
+        <span class="step">Browser</span>
+    </div>
+
+    <h3>Example: Visiting the Dashboard</h3>
+    <ol>
+        <li>User visits <code>/dashboard</code>.</li>
+        <li>The route file matches this URL to <code>ProductController@index</code>.</li>
+        <li>The <code>auth</code> middleware checks the user is logged in.</li>
+        <li>The controller asks the <code>Product</code> model for all products.</li>
+        <li>The controller passes the products to the <code>dashboard.blade.php</code> view.</li>
+        <li>The view renders HTML, which the browser displays.</li>
+    </ol>
+
+    <h3>Project Folder Structure (key parts)</h3>
+    <pre><code>app/
+  Http/
+    Controllers/   <span class="comment">// ProductController, AdminController</span>
+    Middleware/    <span class="comment">// EnsureUserIsAdmin</span>
+  Models/          <span class="comment">// User, Product</span>
+bootstrap/
+  app.php          <span class="comment">// Registers middleware</span>
+config/            <span class="comment">// App configuration</span>
+database/
+  migrations/      <span class="comment">// Table definitions</span>
+  factories/       <span class="comment">// Test data generators</span>
+resources/
+  views/           <span class="comment">// Blade HTML templates</span>
+  css/  js/        <span class="comment">// Frontend assets</span>
+routes/
+  web.php          <span class="comment">// All web routes</span>
+tests/
+  Feature/         <span class="comment">// Automated tests</span></code></pre>
+</div>
+
+<!-- ==================== PAGE 4: DATABASE ==================== -->
+<div class="page page-break">
+    <h2 id="database">4. Database Design & Migrations</h2>
+    <p>
+        Laravel uses <strong>migrations</strong> to define the database schema in code. This means the database structure
+        is version-controlled and can be recreated anywhere with one command: <code>php artisan migrate</code>.
+    </p>
+
+    <h3>4.1 The <code>users</code> Table</h3>
+    <p>Created by <code>database/migrations/0001_01_01_000000_create_users_table.php</code>:</p>
+    <pre><code>Schema::create('users', function (Blueprint $table) {
+    $table->id();
+    $table->string('name');
+    $table->string('email')->unique();
+    $table->timestamp('email_verified_at')->nullable();
+    $table->string('password');
+    $table->rememberToken();
+    $table->timestamps();
+});</code></pre>
+    <table>
+        <tr><th>Column</th><th>Purpose</th></tr>
+        <tr><td><code>id</code></td><td>Unique number for each user.</td></tr>
+        <tr><td><code>name</code></td><td>The user's display name.</td></tr>
+        <tr><td><code>email</code></td><td>Login email (must be unique).</td></tr>
+        <tr><td><code>password</code></td><td>Hashed password (never stored in plain text).</td></tr>
+        <tr><td><code>type</code></td><td><strong>Added later</strong> — either <code>'user'</code> or <code>'admin'</code>.</td></tr>
+    </table>
+
+    <h3>4.2 Adding the <code>type</code> Column (Role System)</h3>
+    <p>
+        To support user vs admin roles, we added a <code>type</code> column with a migration
+        (<code>2026_08_10_095021_add_type_to_users_table.php</code>). New users default to <code>'user'</code>:
+    </p>
+    <pre><code>public function up(): void
+{
+    Schema::table('users', function (Blueprint $table) {
+        $table->string('type')->default('user');
+    });
+}
+
+public function down(): void
+{
+    Schema::table('users', function (Blueprint $table) {
+        $table->dropColumn('type');
+    });
+}</code></pre>
+    <div class="callout warn">
+        <strong>How roles are changed:</strong> There is no in-app button to change roles. Instead, an admin opens the
+        database (e.g., phpMyAdmin at <code>localhost/phpmyadmin</code>), finds the <code>users</code> table, and edits
+        the <code>type</code> column from <code>user</code> to <code>admin</code>. The change takes effect the next time
+        that user logs in.
+    </div>
+
+    <h3>4.3 The <code>products</code> Table</h3>
+    <p>Created by <code>2026_08_10_042347_create_products_table.php</code>:</p>
+    <pre><code>Schema::create('products', function (Blueprint $table) {
+    $table->id();
+    $table->string('name');
+    $table->string('sku')->unique();
+    $table->string('image')->nullable();
+    $table->decimal('price', 8, 2)->default(0);
+    $table->integer('quantity')->default(0);
+    $table->timestamps();
+});</code></pre>
+    <table>
+        <tr><th>Column</th><th>Purpose</th></tr>
+        <tr><td><code>name</code></td><td>Product name.</td></tr>
+        <tr><td><code>sku</code></td><td>Stock Keeping Unit — a unique product code.</td></tr>
+        <tr><td><code>image</code></td><td>Path to the uploaded product image (nullable).</td></tr>
+        <tr><td><code>price</code></td><td>Unit price (decimal, 2 places).</td></tr>
+        <tr><td><code>quantity</code></td><td>Number of units in stock.</td></tr>
+    </table>
+</div>
+
+<!-- ==================== PAGE 5: ROUTES ==================== -->
+<div class="page page-break">
+    <h2 id="routes">5. Routes</h2>
+    <p>
+        All web routes live in <code>routes/web.php</code>. A route maps a URL + HTTP method to a controller method
+        (or a closure). Here is the full route list:
+    </p>
+
+    <h3>5.1 Authentication Routes</h3>
+    <pre><code><span class="comment">// Login</span>
+Route::get('/', ...)->name('login');
+Route::post('/login', ...)->name('login.post');
+
+<span class="comment">// Register</span>
+Route::get('/register', ...)->name('register');
+Route::post('/register', ...)->name('register.post');
+
+<span class="comment">// Logout</span>
+Route::post('/logout', ...)->name('logout');</code></pre>
+    <p>
+        The login and register routes check if the user is already logged in. If so, they redirect based on role:
+        admins go to <code>/admin/dashboard</code>, regular users to <code>/dashboard</code>.
+    </p>
+
+    <h3>5.2 Protected Inventory Routes (require login)</h3>
+    <pre><code>Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [ProductController::class, 'index'])->name('dashboard');
+    Route::resource('products', ProductController::class);
+    Route::post('/products/{id}/stock-in', [ProductController::class, 'stockIn'])->name('products.stockIn');
+    Route::post('/products/{id}/stock-out', [ProductController::class, 'stockOut'])->name('products.stockOut');
+});</code></pre>
+    <p>
+        The <code>auth</code> middleware means you must be logged in to access these. The
+        <code>Route::resource('products', ...)</code> line automatically creates 7 routes for full CRUD:
+    </p>
+    <table>
+        <tr><th>Method</th><th>URL</th><th>Controller Method</th><th>Purpose</th></tr>
+        <tr><td>GET</td><td><code>/products</code></td><td><code>index</code></td><td>List all products</td></tr>
+        <tr><td>GET</td><td><code>/products/create</code></td><td><code>create</code></td><td>Show "add product" form</td></tr>
+        <tr><td>POST</td><td><code>/products</code></td><td><code>store</code></td><td>Save a new product</td></tr>
+        <tr><td>GET</td><td><code>/products/{id}</code></td><td><code>show</code></td><td>View one product</td></tr>
+        <tr><td>GET</td><td><code>/products/{id}/edit</code></td><td><code>edit</code></td><td>Show edit form</td></tr>
+        <tr><td>PUT/PATCH</td><td><code>/products/{id}</code></td><td><code>update</code></td><td>Save changes</td></tr>
+        <tr><td>DELETE</td><td><code>/products/{id}</code></td><td><code>destroy</code></td><td>Delete a product</td></tr>
+    </table>
+
+    <h3>5.3 Admin Routes (require login + admin role)</h3>
+    <pre><code>Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+});</code></pre>
+    <p>
+        The <code>admin</code> middleware (our custom <code>EnsureUserIsAdmin</code>) blocks regular users from
+        accessing <code>/admin/dashboard</code>.
+    </p>
+</div>
+
+<!-- ==================== PAGE 6: CONTROLLERS ==================== -->
+<div class="page page-break">
+    <h2 id="controllers">6. Controllers</h2>
+    <p>
+        Controllers contain the application logic. They receive requests, interact with models, and return views.
+    </p>
+
+    <h3>6.1 <code>ProductController</code> — <code>app/Http/Controllers/ProductController.php</code></h3>
+
+    <h4><code>index()</code> — Show the user dashboard</h4>
+    <pre><code>public function index()
+{
+    $products = Product::all();
+
+    $lowStockThreshold = 5;
+    $lowStockProducts = $products->where('quantity', '<=', $lowStockThreshold);
+
+    return view('dashboard', compact('products', 'lowStockProducts'));
+}</code></pre>
+    <p>
+        Gets all products, finds any with 5 or fewer units (low stock), and passes both to the <code>dashboard</code> view.
+    </p>
+
+    <h4><code>store()</code> — Save a new product (with image upload)</h4>
+    <pre><code>public function store(Request $request)
+{
+    $data = $request->validate([
+        'name' => 'required',
+        'sku' => 'required|unique:products',
+        'price' => 'required|numeric',
+        'quantity' => 'required|integer',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+    ]);
+
+    if ($request->hasFile('image')) {
+        $path = $request->file('image')->store('products', 'public');
+        $data['image'] = $path;
+    }
+
+    Product::create($data);
+
+    return redirect('/dashboard')->with('success', 'Product added!');
+}</code></pre>
+    <p>
+        Validates the form data, uploads the image to the <code>public</code> disk if provided, creates the product,
+        and redirects back to the dashboard with a success message.
+    </p>
+
+    <h4><code>update()</code> — Edit an existing product</h4>
+    <pre><code>public function update(Request $request, Product $product)
+{
+    $data = $request->validate([
+        'name' => 'required',
+        'sku' => 'required|unique:products,sku,'.$product->id,
+        'price' => 'required|numeric',
+        'quantity' => 'required|integer',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+    ]);
+
+    if ($request->hasFile('image')) {
+        $path = $request->file('image')->store('products', 'public');
+        $data['image'] = $path;
+    }
+
+    $product->update($data);
+
+    return redirect('/dashboard')->with('success', 'Product updated!');
+}</code></pre>
+    <p>
+        Similar to <code>store</code>, but updates an existing product. Note the SKU validation ignores the current
+        product's own SKU (<code>unique:products,sku,{id}</code>).
+    </p>
+
+    <h4><code>destroy()</code> — Delete a product</h4>
+    <pre><code>public function destroy(Product $product)
+{
+    $product->delete();
+    return redirect('/dashboard')->with('success', 'Product deleted!');
+}</code></pre>
+
+    <h4><code>stockIn()</code> / <code>stockOut()</code> — Adjust stock</h4>
+    <pre><code>public function stockIn(Request $request, $id)
+{
+    $product = Product::findOrFail($id);
+    $product->quantity += $request->quantity;
+    $product->save();
+    return redirect('/dashboard')->with('success', 'Stock added!');
+}
+
+public function stockOut(Request $request, $id)
+{
+    $product = Product::findOrFail($id);
+    $product->quantity -= $request->quantity;
+    $product->save();
+    return redirect('/dashboard')->with('success', 'Stock removed!');
+}</code></pre>
+    <p>
+        These add or subtract from a product's quantity. <code>findOrFail</code> returns a 404 if the product doesn't exist.
+    </p>
+
+    <h3>6.2 <code>AdminController</code> — <code>app/Http/Controllers/AdminController.php</code></h3>
+    <pre><code>public function dashboard()
+{
+    $products = Product::all();
+
+    $totalProducts = $products->count();
+    $totalUnits = $products->sum('quantity');
+    $inventoryValue = $products->sum(fn ($product) => $product->price * $product->quantity);
+    $lowStockThreshold = 5;
+    $lowStockCount = $products->where('quantity', '<=', $lowStockThreshold)->count();
+    $lowStockProducts = $products->where('quantity', '<=', $lowStockThreshold);
+
+    return view('admin.dashboard', compact(
+        'products', 'totalProducts', 'totalUnits',
+        'inventoryValue', 'lowStockCount', 'lowStockProducts',
+    ));
+}</code></pre>
+    <p>
+        The admin dashboard computes extra analytics: total products, total units, total inventory value
+        (price × quantity summed), and low-stock counts. These feed the KPI cards and charts.
+    </p>
+</div>
+
+<!-- ==================== PAGE 7: MODELS + MIDDLEWARE ==================== -->
+<div class="page page-break">
+    <h2 id="models">7. Models</h2>
+    <p>
+        Models represent database tables and provide an object-oriented way to query them.
+    </p>
+
+    <h3>7.1 <code>User</code> — <code>app/Models/User.php</code></h3>
+    <pre><code>class User extends Authenticatable
+{
+    use HasFactory, Notifiable;
+
+    protected $fillable = [
+        'name', 'email', 'password', 'type',
+    ];
+
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
+
+    public function isAdmin(): bool
+    {
+        return $this->type === 'admin';
+    }
+}</code></pre>
+    <ul>
+        <li><code>$fillable</code> — which columns can be mass-assigned (safety feature).</li>
+        <li><code>$hidden</code> — hides the password and remember token from JSON responses.</li>
+        <li><code>isAdmin()</code> — a helper that returns <code>true</code> if the user's <code>type</code> is <code>'admin'</code>.</li>
+    </ul>
+
+    <h3>7.2 <code>Product</code> — <code>app/Models/Product.php</code></h3>
+    <pre><code>class Product extends Model
+{
+    protected $fillable = [
+        'name', 'sku', 'image', 'price', 'quantity',
+    ];
+}</code></pre>
+    <p>
+        A simple model. The <code>$fillable</code> array must include <code>image</code> so image uploads can be saved.
+    </p>
+
+    <h2 id="middleware">8. Middleware & the Role System</h2>
+    <p>
+        Middleware runs <em>before</em> a request reaches a controller. It's like a security guard at the door.
+    </p>
+
+    <h3>8.1 <code>EnsureUserIsAdmin</code> — <code>app/Http/Middleware/EnsureUserIsAdmin.php</code></h3>
+    <pre><code>class EnsureUserIsAdmin
+{
+    public function handle(Request $request, Closure $next): Response
+    {
+        if (! $request->user()?->isAdmin()) {
+            return redirect('/dashboard');
+        }
+
+        return $next($request);
+    }
+}</code></pre>
+    <p>
+        If the logged-in user is <em>not</em> an admin, they are redirected to the regular dashboard. Otherwise, the
+        request continues (<code>$next($request)</code>).
+    </p>
+
+    <h3>8.2 Registering the Middleware — <code>bootstrap/app.php</code></h3>
+    <pre><code>->withMiddleware(function (Middleware $middleware): void {
+    $middleware->alias([
+        'admin' => EnsureUserIsAdmin::class,
+    ]);
+})</code></pre>
+    <p>
+        This gives the middleware a short alias, <code>admin</code>, so we can use it in routes like
+        <code>Route::middleware(['auth', 'admin'])</code>.
+    </p>
+
+    <h3>8.3 How the Role System Works End-to-End</h3>
+    <div class="flow">
+        <span class="step">User signs up</span>
+        <span class="arrow">→</span>
+        <span class="step">type = 'user' (default)</span>
+        <span class="arrow">→</span>
+        <span class="step">Admin edits DB in phpMyAdmin</span>
+        <span class="arrow">→</span>
+        <span class="step">type = 'admin'</span>
+        <span class="arrow">→</span>
+        <span class="step">User logs in again</span>
+        <span class="arrow">→</span>
+        <span class="step">Redirected to /admin/dashboard</span>
+    </div>
+    <p>
+        The login route checks <code>Auth::user()->isAdmin()</code> to decide where to redirect. The
+        <code>admin</code> middleware protects the admin dashboard from non-admins.
+    </p>
+</div>
+
+<!-- ==================== PAGE 8: VIEWS ==================== -->
+<div class="page page-break">
+    <h2 id="views">9. Views & User Interface</h2>
+    <p>
+        Views are Blade templates (<code>.blade.php</code>) that generate HTML. They live in <code>resources/views/</code>.
+    </p>
+
+    <h3>9.1 Layouts</h3>
+    <table>
+        <tr><th>File</th><th>Purpose</th></tr>
+        <tr><td><code>layouts/app.blade.php</code></td><td>Main layout for logged-in pages. Contains the sidebar, topbar, and content area. The sidebar shows different links for admins vs users.</td></tr>
+        <tr><td><code>layouts/auth.blade.php</code></td><td>Layout for the login/register pages (split-screen branding design).</td></tr>
+    </table>
+
+    <h3>9.2 Auth Pages</h3>
+    <ul>
+        <li><code>login.blade.php</code> — email + password form.</li>
+        <li><code>register.blade.php</code> — name, email, password, confirm password.</li>
+    </ul>
+
+    <h3>9.3 Dashboards</h3>
+    <table>
+        <tr><th>File</th><th>Who sees it</th><th>Contents</th></tr>
+        <tr>
+            <td><code>dashboard.blade.php</code></td>
+            <td>Regular users</td>
+            <td>Low-stock alert + products table (no KPIs or charts).</td>
+        </tr>
+        <tr>
+            <td><code>admin/dashboard.blade.php</code></td>
+            <td>Admins</td>
+            <td>KPI cards (total products, units, value, low stock) + two Chart.js charts + products table + admin info card.</td>
+        </tr>
+    </table>
+
+    <h3>9.4 Product Forms</h3>
+    <ul>
+        <li><code>create.blade.php</code> — form to add a product (name, SKU, price, quantity, image).</li>
+        <li><code>edit.blade.php</code> — form to edit an existing product.</li>
+    </ul>
+
+    <h3>9.5 The Sidebar (role-aware)</h3>
+    <p>
+        In <code>layouts/app.blade.php</code>, the sidebar checks the user's role to show the right dashboard link:
+    </p>
+    <pre><code>@if(auth()->user()->isAdmin())
+    <a href="/admin/dashboard">Admin Dashboard</a>
+@else
+    <a href="/dashboard">Dashboard</a>
+@endif</code></pre>
+
+    <h3>9.6 Frontend Assets</h3>
+    <ul>
+        <li><code>resources/css/app.css</code> — imports Bootstrap CSS and custom sidebar styles.</li>
+        <li><code>resources/js/app.js</code> — imports Bootstrap JS bundle.</li>
+        <li>Chart.js is loaded via CDN in the layout for the admin charts.</li>
+    </ul>
+</div>
+
+<!-- ==================== PAGE 9: TESTING ==================== -->
+<div class="page page-break">
+    <h2 id="testing">10. Testing</h2>
+    <p>
+        The project uses <strong>Pest</strong> (a testing framework for PHP) with feature tests. Tests simulate real
+        HTTP requests and verify the app behaves correctly. There are <strong>12 tests</strong> in total.
+    </p>
+
+    <h3>10.1 <code>tests/Feature/ProductTest.php</code> — Product CRUD</h3>
+    <table>
+        <tr><th>Test</th><th>What it verifies</th></tr>
+        <tr><td>a user can create a product with an image</td><td>POSTs a new product with a fake image, checks it's saved and the image file exists.</td></tr>
+        <tr><td>a product can be updated with a new image</td><td>PUTs changes to a product, verifies the name and image updated.</td></tr>
+        <tr><td>a product can be deleted</td><td>DELETEs a product, verifies it's gone from the database.</td></tr>
+    </table>
+
+    <h3>10.2 <code>tests/Feature/AdminRoleTest.php</code> — Roles & Dashboards</h3>
+    <table>
+        <tr><th>Test</th><th>What it verifies</th></tr>
+        <tr><td>a regular user cannot access the admin dashboard</td><td>Non-admin is redirected away from <code>/admin/dashboard</code>.</td></tr>
+        <tr><td>an admin can access the admin dashboard</td><td>Admin can view <code>/admin/dashboard</code>.</td></tr>
+        <tr><td>a regular user dashboard does not show KPIs or charts</td><td>User dashboard hides analytics.</td></tr>
+        <tr><td>the admin dashboard shows KPIs and charts</td><td>Admin dashboard shows analytics.</td></tr>
+        <tr><td>a regular user is redirected to their dashboard after login</td><td>Login redirects users to <code>/dashboard</code>.</td></tr>
+        <tr><td>an admin is redirected to the admin dashboard after login</td><td>Login redirects admins to <code>/admin/dashboard</code>.</td></tr>
+        <tr><td>a new user is created with the default user type</td><td>New signups get <code>type = 'user'</code>.</td></tr>
+    </table>
+
+    <h3>10.3 How Tests Use Factories</h3>
+    <p>
+        <code>database/factories/UserFactory.php</code> generates test users. It has an <code>admin()</code> state so
+        tests can easily create an admin:
+    </p>
+    <pre><code>public function definition(): array
+{
+    return [
+        'name' => fake()->name(),
+        'email' => fake()->unique()->safeEmail(),
+        'password' => static::$password ??= Hash::make('password'),
+        'type' => 'user',
+    ];
+}
+
+public function admin(): static
+{
+    return $this->state(fn (array $attributes) => [
+        'type' => 'admin',
+    ]);
+}</code></pre>
+    <p>
+        Tests use <code>RefreshDatabase</code> so each test starts with a clean database, and
+        <code>User::factory()->admin()->create()</code> creates an admin user for testing.
+    </p>
+
+    <h3>10.4 Running the Tests</h3>
+    <pre><code>php artisan test --compact</code></pre>
+    <p>Expected output: <code>12 passed (43 assertions)</code>.</p>
+</div>
+
+<!-- ==================== PAGE 10: RUN + CHEAT SHEET ==================== -->
+<div class="page page-break">
+    <h2 id="run">11. How to Run the Project</h2>
+    <p>These are the commands to set up and start the app on a local machine (e.g., XAMPP):</p>
+    <pre><code><span class="comment"># 1. Install PHP dependencies</span>
+composer install
+
+<span class="comment"># 2. Install JavaScript dependencies</span>
+npm install
+
+<span class="comment"># 3. Copy environment file and set your database credentials in .env</span>
+cp .env.example .env
+php artisan key:generate
+
+<span class="comment"># 4. Create the database tables</span>
+php artisan migrate
+
+<span class="comment"># 5. Build frontend assets</span>
+npm run build
+
+<span class="comment"># 6. Start the development server</span>
+php artisan serve
+<span class="comment"># Then visit http://127.0.0.1:8000</span></code></pre>
+
+    <div class="callout">
+        <strong>To make someone an admin:</strong> After registering a user, open phpMyAdmin
+        (<code>http://localhost/phpmyadmin</code>), open the <code>users</code> table, and change that user's
+        <code>type</code> from <code>user</code> to <code>admin</code>.
+    </div>
+
+    <h2 id="cheatsheet">12. Presenter's Cheat Sheet</h2>
+    <p>Simple talking points you can say aloud, in plain English:</p>
+
+    <h3>What is the project?</h3>
+    <p>
+        "This is an inventory management web app. It lets a business register users, log in, and manage their products —
+        adding items, tracking stock, and seeing how much inventory is worth."
+    </p>
+
+    <h3>What framework and why?</h3>
+    <p>
+        "It's built with Laravel, a popular PHP framework. Laravel gives us authentication, database migrations, and a
+        clean structure out of the box, so we don't have to build everything from scratch."
+    </p>
+
+    <h3>How is it structured? (MVC)</h3>
+    <p>
+        "It follows the Model-View-Controller pattern. Models talk to the database, Views are the HTML pages, and
+        Controllers handle the logic in between. When you visit a page, a route sends the request to a controller,
+        which gets data from a model and passes it to a view."
+    </p>
+
+    <h3>How does the database work?</h3>
+    <p>
+        "We have two main tables: users and products. We use Laravel migrations to define the tables in code, so the
+        database can be recreated anywhere. We added a 'type' column to users to support admin and regular user roles."
+    </p>
+
+    <h3>How do roles work?</h3>
+    <p>
+        "When someone signs up, they're a regular user by default. To make someone an admin, you change their 'type'
+        to 'admin' directly in the database, for example in phpMyAdmin. The next time they log in, they get admin
+        access and see the admin dashboard with KPIs and charts."
+    </p>
+
+    <h3>What can users do?</h3>
+    <p>
+        "Users can add, edit, and delete products, upload product images, and adjust stock with 'stock in' and
+        'stock out' buttons. They also see low-stock alerts."
+    </p>
+
+    <h3>What can admins do that users can't?</h3>
+    <p>
+        "Admins see the full analytics dashboard — KPI cards showing total products, total units, inventory value, and
+        low-stock items, plus charts. Regular users just see the product list."
+    </p>
+
+    <h3>How is security handled?</h3>
+    <p>
+        "Passwords are hashed, so they're never stored in plain text. We use middleware to protect routes — you must be
+        logged in to access the app, and you must be an admin to access admin pages. We also validate all form input."
+    </p>
+
+    <h3>How is it tested?</h3>
+    <p>
+        "We have 12 automated tests that verify products can be created, updated, and deleted, and that the role system
+        works — regular users can't access admin pages, admins can, and new users default to the 'user' role."
+    </p>
+
+    <h3>Likely questions & answers</h3>
+    <table>
+        <tr><th>Question</th><th>Answer</th></tr>
+        <tr><td>Why Laravel?</td><td>It's secure, well-structured, and has built-in tools for auth, migrations, and testing.</td></tr>
+        <tr><td>How do you prevent unauthorized access?</td><td>Middleware. The <code>auth</code> middleware requires login; the <code>admin</code> middleware blocks non-admins.</td></tr>
+        <tr><td>How are passwords stored?</td><td>Hashed using bcrypt — never in plain text.</td></tr>
+        <tr><td>How do you handle file uploads?</td><td>Images are validated, stored on the public disk, and the path is saved in the database.</td></tr>
+        <tr><td>How would you add a new feature?</td><td>Create a migration for any new columns, add a model, add routes, write a controller method, create a view, and add tests.</td></tr>
+    </table>
+
+    <div class="footer-note">
+        Ujuzi Inventory Management System — Project Report &nbsp;|&nbsp; Laravel 12 &nbsp;|&nbsp; PHP 8.2 &nbsp;|&nbsp; MySQL
+    </div>
+</div>
+
+</body>
+</html>

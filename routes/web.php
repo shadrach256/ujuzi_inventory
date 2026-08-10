@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProductController;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -9,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 // Login Routes
 Route::get('/', function () {
     if (Auth::check()) {
-        return redirect('/dashboard');
+        return redirect(Auth::user()->isAdmin() ? '/admin/dashboard' : '/dashboard');
     }
 
     return view('login');
@@ -18,7 +19,7 @@ Route::get('/', function () {
 Route::post('/login', function () {
     $credentials = request()->only('email', 'password');
     if (Auth::attempt($credentials)) {
-        return redirect('/dashboard');
+        return redirect(Auth::user()->isAdmin() ? '/admin/dashboard' : '/dashboard');
     }
 
     return back()->with('error', 'Invalid credentials');
@@ -27,7 +28,7 @@ Route::post('/login', function () {
 // Register Routes
 Route::get('/register', function () {
     if (Auth::check()) {
-        return redirect('/dashboard');
+        return redirect(Auth::user()->isAdmin() ? '/admin/dashboard' : '/dashboard');
     }
 
     return view('register');
@@ -61,4 +62,9 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('products', ProductController::class);
     Route::post('/products/{id}/stock-in', [ProductController::class, 'stockIn'])->name('products.stockIn');
     Route::post('/products/{id}/stock-out', [ProductController::class, 'stockOut'])->name('products.stockOut');
+});
+
+// Admin Routes
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 });

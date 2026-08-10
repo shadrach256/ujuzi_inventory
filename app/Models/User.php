@@ -11,10 +11,15 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'type',
     ];
 
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function isAdmin(): bool
+    {
+        return $this->type === 'admin';
+    }
 }
