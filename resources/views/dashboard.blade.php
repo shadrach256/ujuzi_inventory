@@ -1,26 +1,89 @@
 @extends('layouts.app')
 
 @section('title', 'Dashboard')
-@section('page_title', 'Dashboard')
+@section('page_title', $pageTitle ?? 'Dashboard')
 
 @section('content')
-    <!-- Low Stock Alert -->
+    <!-- Page Hero -->
+    <section class="page-hero fade-up mb-4">
+        <div class="d-flex flex-column flex-xl-row align-items-start justify-content-between gap-3">
+            <div>
+                <span class="hero-greeting">Overview</span>
+                <h2>Good {{ now()->format('A') === 'AM' ? 'morning' : (now()->hour < 17 ? 'afternoon' : 'evening') }}, {{ ucfirst(strtok(auth()->user()->name ?? 'User', ' ')) }}</h2>
+                <p>Inventory overview and quick stock status.</p>
+            </div>
+            <div class="hero-actions flex-shrink-0">
+                <a href="/products/create" class="hero-chip solid">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                    Add Product
+                </a>
+                <a href="/products" class="hero-chip">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="M3.3 7 12 12l8.7-5"/><path d="M12 22V12"/></svg>
+                    View Products
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <div class="row g-3 mb-4">
+        <div class="col-12 fade-up">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h3 class="h6 fw-semibold mb-3">Inventory snapshot</h3>
+                    <p class="small text-muted mb-3">A quick view of product counts, stock levels, and value.</p>
+                    <div class="row g-3">
+                        <div class="col-12 col-sm-6 col-lg-4">
+                            <div class="border rounded-3 p-3">
+                                <p class="small text-muted mb-1">Products tracked</p>
+                                <p class="fw-semibold mb-0">{{ $stats['totalProducts'] }}</p>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-lg-4">
+                            <div class="border rounded-3 p-3">
+                                <p class="small text-muted mb-1">Current stock</p>
+                                <p class="fw-semibold mb-0">{{ number_format($stats['totalUnits']) }}</p>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-lg-4">
+                            <div class="border rounded-3 p-3">
+                                <p class="small text-muted mb-1">Inventory worth</p>
+                                <p class="fw-semibold mb-0">Shs {{ number_format($stats['inventoryValue'], 0) }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @if($lowStockProducts->isNotEmpty())
-        <div class="card border-warning bg-warning-subtle">
-            <div class="card-body">
-                <h3 class="h6 fw-semibold text-warning-emphasis d-flex align-items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                    Low Stock Alert
+        <div class="card border-0 shadow-sm mb-4 fade-up d5" style="border-left: 4px solid var(--amber) !important;">
+            <div class="card-header d-flex align-items-center justify-content-between py-3 flex-wrap gap-2">
+                <h3 class="h6 fw-semibold mb-0 d-flex align-items-center gap-2">
+                    <span class="badge-soft warning"><span class="dot"></span>Inventory alert</span>
+                    <span class="text-muted fw-normal small">{{ $lowStockProducts->count() }} item(s) need restocking</span>
                 </h3>
-                <div class="row g-2 mt-1">
+                <a href="/products" class="btn btn-soft btn-sm">Review stock</a>
+            </div>
+            <div class="card-body">
+                <div class="row g-2">
                     @foreach($lowStockProducts as $product)
                         <div class="col-12 col-sm-6 col-lg-4">
-                            <div class="d-flex align-items-center justify-content-between border border-warning-subtle bg-white rounded px-3 py-2">
-                                <div>
-                                    <p class="small fw-medium mb-0">{{ $product->name }}</p>
-                                    <p class="small text-muted mb-0">{{ $product->sku }}</p>
+                            <div class="d-flex align-items-center justify-content-between border rounded-3 px-3 py-2" style="border-color: rgba(245,158,11,0.25) !important; background: rgba(255,251,235,0.6);">
+                                <div class="d-flex align-items-center gap-2 min-w-0">
+                                    <div class="product-thumb" style="background: {{ $product->image ? 'transparent' : '#f59e0b' }};">
+                                        @if($product->image)
+                                            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" style="width:44px;height:44px;object-fit:cover;">
+                                        @else
+                                            {{ strtoupper(substr($product->name, 0, 2)) }}
+                                        @endif
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="small fw-bold mb-0 text-truncate">{{ $product->name }}</p>
+                                        <p class="small text-muted mb-0">{{ $product->sku }}</p>
+                                    </div>
                                 </div>
-                                <span class="badge rounded-pill text-bg-danger">{{ $product->quantity }} left</span>
+                                <span class="badge-soft danger">{{ $product->quantity }} left</span>
                             </div>
                         </div>
                     @endforeach
@@ -29,75 +92,4 @@
         </div>
     @endif
 
-    <!-- Products Table -->
-    <div class="card border-0 shadow-sm mt-4">
-        <div class="card-header bg-white d-flex align-items-center justify-content-between py-3">
-            <h3 class="h6 fw-semibold mb-0">Products</h3>
-            <a href="/products/create" class="btn btn-primary btn-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" class="me-1"><path d="M12 4v16m8-8H4"/></svg>
-                Add Product
-            </a>
-        </div>
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th class="small text-uppercase text-muted">Image</th>
-                        <th class="small text-uppercase text-muted">Name</th>
-                        <th class="small text-uppercase text-muted">SKU</th>
-                        <th class="small text-uppercase text-muted">Price</th>
-                        <th class="small text-uppercase text-muted">Qty</th>
-                        <th class="small text-uppercase text-muted">Value</th>
-                        <th class="small text-uppercase text-muted">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($products as $p)
-                    <tr>
-                        <td>
-                            @if($p->image)
-                                <img src="{{ asset('storage/' . $p->image) }}" alt="{{ $p->name }}" class="rounded" style="width: 40px; height: 40px; object-fit: cover;">
-                            @else
-                                <div class="d-flex align-items-center justify-content-center rounded bg-light text-muted" style="width: 40px; height: 40px;">N/A</div>
-                            @endif
-                        </td>
-                        <td class="fw-medium">{{ $p->name }}</td>
-                        <td class="text-muted">{{ $p->sku }}</td>
-                        <td>{{ number_format($p->price, 2) }}</td>
-                        <td>
-                            <span class="badge rounded-pill {{ $p->quantity <= 5 ? 'text-bg-danger' : 'text-bg-success' }}">
-                                {{ $p->quantity }}
-                            </span>
-                        </td>
-                        <td>{{ number_format($p->price * $p->quantity, 2) }}</td>
-                        <td>
-                            <div class="d-flex align-items-center gap-1 flex-wrap">
-                                <a href="/products/{{ $p->id }}/edit" class="btn btn-sm btn-warning">Edit</a>
-                                <form action="/products/{{ $p->id }}/stock-in" method="POST" class="d-inline-flex align-items-center gap-1">
-                                    @csrf
-                                    <input type="number" name="quantity" value="1" min="1" class="form-control form-control-sm" style="width: 56px;">
-                                    <button class="btn btn-sm btn-success">In</button>
-                                </form>
-                                <form action="/products/{{ $p->id }}/stock-out" method="POST" class="d-inline-flex align-items-center gap-1">
-                                    @csrf
-                                    <input type="number" name="quantity" value="1" min="1" class="form-control form-control-sm" style="width: 56px;">
-                                    <button class="btn btn-sm btn-secondary">Out</button>
-                                </form>
-                                <form action="/products/{{ $p->id }}" method="POST" class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="btn btn-sm btn-danger">Delete</button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="7" class="text-center text-muted py-5">No products found. Click "Add Product" to get started.</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-    </div>
 @endsection

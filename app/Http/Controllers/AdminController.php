@@ -17,6 +17,13 @@ class AdminController extends Controller
         $lowStockCount = $products->where('quantity', '<=', $lowStockThreshold)->count();
         $lowStockProducts = $products->where('quantity', '<=', $lowStockThreshold);
 
+        $stats = [
+            'totalProducts' => $totalProducts,
+            'totalUnits' => $totalUnits,
+            'inventoryValue' => $inventoryValue,
+            'lowStockCount' => $lowStockCount,
+        ];
+
         return view('admin.dashboard', compact(
             'products',
             'totalProducts',
@@ -24,6 +31,7 @@ class AdminController extends Controller
             'inventoryValue',
             'lowStockCount',
             'lowStockProducts',
+            'stats',
         ));
     }
 }

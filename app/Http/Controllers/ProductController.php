@@ -7,16 +7,53 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function dashboard()
     {
         $products = Product::all();
 
         $lowStockThreshold = 5;
         $lowStockProducts = $products->where('quantity', '<=', $lowStockThreshold);
 
+        $stats = [
+            'totalProducts' => $products->count(),
+            'totalUnits' => $products->sum('quantity'),
+            'inventoryValue' => $products->sum(fn ($product) => $product->price * $product->quantity),
+            'lowStockCount' => $lowStockProducts->count(),
+        ];
+
         return view('dashboard', compact(
+            'lowStockProducts',
+            'stats',
+        ));
+    }
+
+    public function index(Request $request)
+    {
+        $products = Product::query()
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $search = $request->string('search')->trim()->lower();
+
+                $query->where(function ($query) use ($search) {
+                    $query->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"])
+                        ->orWhereRaw('LOWER(sku) LIKE ?', ["%{$search}%"]);
+                });
+            })
+            ->get();
+
+        $lowStockThreshold = 5;
+        $lowStockProducts = $products->where('quantity', '<=', $lowStockThreshold);
+
+        $stats = [
+            'totalProducts' => $products->count(),
+            'totalUnits' => $products->sum('quantity'),
+            'inventoryValue' => $products->sum(fn ($product) => $product->price * $product->quantity),
+            'lowStockCount' => $lowStockProducts->count(),
+        ];
+
+        return view('products.index', compact(
             'products',
             'lowStockProducts',
+            'stats',
         ));
     }
 

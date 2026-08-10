@@ -58,7 +58,7 @@ Route::post('/logout', function () {
 
 // Protected Inventory Routes
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [ProductController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [ProductController::class, 'dashboard'])->name('dashboard');
     Route::resource('products', ProductController::class);
     Route::post('/products/{id}/stock-in', [ProductController::class, 'stockIn'])->name('products.stockIn');
     Route::post('/products/{id}/stock-out', [ProductController::class, 'stockOut'])->name('products.stockOut');
