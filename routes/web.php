@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RegistrationController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,29 +27,10 @@ Route::post('/login', function () {
 })->name('login.post');
 
 // Register Routes
-Route::get('/register', function () {
-    if (Auth::check()) {
-        return redirect(Auth::user()->isAdmin() ? '/admin/dashboard' : '/dashboard');
-    }
-
-    return view('register');
-})->name('register');
-
-Route::post('/register', function (Request $request) {
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|string|email|max:255|unique:users',
-        'password' => 'required|string|min:6|confirmed',
-    ]);
-
-    User::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'password' => bcrypt($request->password),
-    ]);
-
-    return redirect('/')->with('success', 'Registration successful! Please login.');
-})->name('register.post');
+Route::get('/register', [RegistrationController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [RegistrationController::class, 'sendOtp'])->name('register.post');
+Route::get('/otp/verify', [RegistrationController::class, 'showOtpForm'])->name('otp.verify');
+Route::post('/otp/verify', [RegistrationController::class, 'verifyOtp'])->name('otp.verify.post');
 
 Route::post('/logout', function () {
     Auth::logout();

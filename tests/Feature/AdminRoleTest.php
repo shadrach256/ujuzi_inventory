@@ -82,12 +82,20 @@ test('an admin is redirected to the admin dashboard after login', function () {
 });
 
 test('a new user is created with the default user type', function () {
+    // Step 1: Request OTP
     $this->post('/register', [
         'name' => 'Test User',
         'email' => 'test@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
-    ])->assertRedirect('/');
+    ])->assertRedirect(route('otp.verify'));
+
+    // Step 2: Verify OTP and complete registration
+    $otp = \App\Models\OtpCode::where('email', 'test@example.com')->first()->otp_code;
+    
+    $this->post('/otp/verify', [
+        'otp' => $otp,
+    ])->assertRedirect(route('login'));
 
     $user = User::where('email', 'test@example.com')->first();
 
